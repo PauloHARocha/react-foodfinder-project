@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Map from './components/Map'
 import NavBar from './components/NavBar'
+import SideMenu from './components/SideMenu'
 
 class App extends Component {
   state = {
@@ -135,15 +136,13 @@ class App extends Component {
   render() {
     return (
       <div>
-        <aside className={`side-menu ${this.state.menu ? "visible" : ""}`}>
-          <h2>Food Finder</h2>
-          <input type="text" onChange={this.onChangeInput}></input>
-          <ul>
-            {this.state.showingPlaces.map((place, id) => (
-              <li key={place.name} id={id} onClick={this.createInfoWindowFromList}>{place.name}</li>
-            ))}
-          </ul>
-        </aside>
+        
+        <SideMenu 
+          menu={this.state.menu}
+          onChangeInput={this.onChangeInput}
+          createInfoWindowFromList={this.createInfoWindowFromList}
+          showingPlaces={this.state.showingPlaces}/>
+
         <div className={`wrapper ${this.state.menu ? "slide" : ""}`}>
           <NavBar changeMenu={this.changeMenu}/>
           <Map

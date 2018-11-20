@@ -21,7 +21,22 @@ body {
 }
 
 .visible {
-  transform: translate(0);
+    transform: translate(0);
+}
+.food-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+.food-item {
+    word-wrap: break-word;  
+    padding: 0.5em;
+    font-size: 1em;
+    border-top: 1px solid white;
+    cursor: pointer;
+}
+.food-item:hover {
+    background-color: white;
+    color: black;
 }
 
 .wrapper {

@@ -1,68 +1,41 @@
 import React, { Component } from 'react';
-import { renderToString } from 'react-dom/server';
 import Map from './Map'
-import InfoWindow from './InfoWindow'
 
 class App extends Component {
   state = {
-    places: [
-      {
-        name: 'Ramon Hostel Bar',
-        lat: -8.129405,
-        lng: -34.903342
-      },
-      {
-        name: 'Pracinha de Boa Viagem',
-        lat: -8.132092,
-        lng: -34.900324
-      },
-      {
-        name: 'Shopping Recife',
-        lat: -8.119113,
-        lng: -34.904934
-      },
-      {
-        name: 'Villa Gourmet',
-        lat: -8.126144,
-        lng: -34.903922
-      },
-      {
-        name: 'Mafuá do Januário',
-        lat: -8.133618,
-        lng: -34.904528
-      }
-    ],
-    showingPlaces: [
-      {
-        name: 'Ramon Hostel Bar',
-        lat: -8.129405,
-        lng: -34.903342
-      },
-      {
-        name: 'Pracinha de Boa Viagem',
-        lat: -8.132092,
-        lng: -34.900324
-      },
-      {
-        name: 'Shopping Recife',
-        lat: -8.119113,
-        lng: -34.904934
-      },
-      {
-        name: 'Villa Gourmet',
-        lat: -8.126144,
-        lng: -34.903922
-      },
-      {
-        name: 'Mafuá do Januário',
-        lat: -8.133618,
-        lng: -34.904528
-      }
-    ],
+    places: [],
+    showingPlaces: [],
     menu: false,
     infoWindow: null,
     map: null,
-    markerList: []
+    markerList: [],
+  }
+  componentDidMount() {
+    const url = new URL("https://api.foursquare.com/v2/venues/explore")
+    const parameters = {
+      client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
+      client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
+      query: "food",
+      ll: "-8.129725,-34.902381"
+    }
+    url.search = new URLSearchParams({ client_id: parameters.client_id, 
+      client_secret: parameters.client_secrect, v: "20181025", locale: 'br', 
+      ll: parameters.ll, query: parameters.query })
+    
+    fetch(url)
+    .then(res => res.json())
+    .then(res => {
+      let places = res.response.groups[0].items.map(place => ({
+        name: place.venue.name,
+        address: place.venue.location.address,
+        lat: place.venue.location.lat,
+        lng: place.venue.location.lng,
+        id: place.venue.id
+      }))
+      
+      this.setState({places: places, showingPlaces: places})
+      this.createMarkers(this.state.map, places)
+    })
   }
 
   changeMenu = () => {
@@ -70,26 +43,59 @@ class App extends Component {
     this.setState({ menu: menu })
   }
 
-  createInfoWindow(marker, map) {
+  createInfoWindow(marker, info, map) {
     let infoWindow = this.state.infoWindow
     infoWindow.close()
     infoWindow.setContent('')
     infoWindow.marker = marker
-
+    
     infoWindow.addListener('closeclick', function () {
       infoWindow.setMarker = null;
     });
-    let content = `<div><img className="info__yelp" alt="Yelp Logo" 
-    src="https://s3-media2.fl.yelpcdn.com/assets/srv0/styleguide/1ea40efd80f5/assets/img/brand_guidelines/yelp_fullcolor.png"/></div>`
-    infoWindow.setContent(content)
-      
+    const url = new URL(`https://api.foursquare.com/v2/venues/${info.id}/photos`)
+    const parameters = {
+      client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
+      client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
+      v: "20181025"
+    }
+    url.search = new URLSearchParams({
+      client_id: parameters.client_id,
+      client_secret: parameters.client_secrect, v: "20181025"
+    })
     
-    infoWindow.open(map, marker)
+    fetch(url)
+    .then(res => res.json())
+    .then(res => {
+      let prefix = res.response.photos.items[0].prefix
+      let size = 'width100'
+      let suffix = res.response.photos.items[0].suffix
+      const url = new URL(`${prefix}${size}${suffix}`)
+      url.search = new URLSearchParams({
+        client_id: parameters.client_id,
+        client_secret: parameters.client_secrect, v: "20181025"
+      })
+      return url
+    })
+    .then(res => (
+      `<div>
+        <img src=${res}/>
+        <h3>${info.name}</h3>
+        <p>${info.address}</p>
+      </div>`
+    ))
+    .then(content => {
+      infoWindow.setContent(content)
+      this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
+      marker.setIcon(this.makeMarkerIcon('FFFFFF'))
+      infoWindow.open(map, marker)
+    })
+    
   }
 
   createInfoWindowFromList = (e) => {
     let marker = this.state.markerList[e.target.id]
-    this.createInfoWindow(marker, this.state.map)
+    let info = this.state.showingPlaces[e.target.id]
+    this.createInfoWindow(marker, info, this.state.map)
   }
 
   makeMarkerIcon(markerColor) {
@@ -113,7 +119,6 @@ class App extends Component {
     let showingPlaces = this.state.places.filter(place => (
       place.name.includes(e.target.value)
     ))
-    console.log(showingPlaces)
     
     this.createMarkers(this.state.map, showingPlaces)
   }
@@ -129,17 +134,17 @@ class App extends Component {
         map: map,
         title: place.name,
         animation: window.google.maps.Animation.DROP,
-        icon: defaultIcon('0091ff')
+        icon: defaultIcon('FFFF24')
       })
       markerList.push(marker)
       marker.addListener('click', e => {
-        this.createInfoWindow(markerList[id], map)
+        this.createInfoWindow(markerList[id], showingPlaces[id], map)
       })
       marker.addListener('mouseover', function () {
-        this.setIcon(highlightedIcon('FFFF24'));
+        this.setIcon(highlightedIcon('FFFFFF'));
       });
       marker.addListener('mouseout', function () {
-        this.setIcon(defaultIcon('0091ff'));
+        this.setIcon(defaultIcon('FFFF24'));
       });
     })
     this.setState({ markerList: markerList, showingPlaces: showingPlaces })
@@ -170,7 +175,7 @@ class App extends Component {
             id="MapRecife"
             options={{
               center: { lat: -8.129725, lng: -34.902381 },
-              zoom: 15
+              zoom: 16
             }}
             onMapLoad={map => {
               this.createMarkers(map, this.state.showingPlaces)

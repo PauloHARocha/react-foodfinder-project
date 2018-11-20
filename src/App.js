@@ -33,7 +33,9 @@ class App extends Component {
       }
     ],
     menu: false,
-    infoWindow: null
+    infoWindow: null,
+    map: null,
+    markerList: []
   }
 
   changeMenu = () => {
@@ -50,10 +52,17 @@ class App extends Component {
     infoWindow.addListener('closeclick', function () {
       infoWindow.setMarker = null;
     });
-
-    infoWindow.setContent('<div>TEstando</div>')
+    let content = `<div><img className="info__yelp" alt="Yelp Logo" 
+    src="https://s3-media2.fl.yelpcdn.com/assets/srv0/styleguide/1ea40efd80f5/assets/img/brand_guidelines/yelp_fullcolor.png"/></div>`
+    infoWindow.setContent(content)
+      
     
     infoWindow.open(map, marker)
+  }
+
+  createInfoWindowFromList = (e) => {
+    let marker = this.state.markerList[e.target.id]
+    this.createInfoWindow(marker, this.state.map)
   }
 
   makeMarkerIcon(markerColor) {
@@ -78,8 +87,8 @@ class App extends Component {
         <aside className={`side-menu ${this.state.menu ? "visible" : ""}`}>
           <h2>Food Finder</h2>
           <ul>
-            {this.state.places.map(place => (
-              <li key={place.name} >{place.name}</li>
+            {this.state.places.map((place, id) => (
+              <li key={place.name} id={id} onClick={this.createInfoWindowFromList}>{place.name}</li>
             ))}
           </ul>
         </aside>
@@ -100,7 +109,7 @@ class App extends Component {
             }}
             onMapLoad={map => {
               let marker, markerList = []
-              this.setState({ infoWindow: new window.google.maps.InfoWindow()})
+              this.setState({ map: map, infoWindow: new window.google.maps.InfoWindow()})
               this.state.places.map((place, id) => {
                 marker = new window.google.maps.Marker({
                   position: { lat: place.lat, lng: place.lng },
@@ -119,8 +128,8 @@ class App extends Component {
                 marker.addListener('mouseout', function () {
                   this.setIcon(defaultIcon('0091ff'));
                 });
-                
               })
+              this.setState({markerList: markerList})
             }}
           />
         </div>

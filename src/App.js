@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Map from './Map'
+import Map from './components/Map'
+import NavBar from './components/NavBar'
 
 class App extends Component {
   state = {
@@ -9,33 +10,6 @@ class App extends Component {
     infoWindow: null,
     map: null,
     markerList: [],
-  }
-  componentDidMount() {
-    const url = new URL("https://api.foursquare.com/v2/venues/explore")
-    const parameters = {
-      client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
-      client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
-      query: "food",
-      ll: "-8.129725,-34.902381"
-    }
-    url.search = new URLSearchParams({ client_id: parameters.client_id, 
-      client_secret: parameters.client_secrect, v: "20181025", locale: 'br', 
-      ll: parameters.ll, query: parameters.query })
-    
-    fetch(url)
-    .then(res => res.json())
-    .then(res => {
-      let places = res.response.groups[0].items.map(place => ({
-        name: place.venue.name,
-        address: place.venue.location.address,
-        lat: place.venue.location.lat,
-        lng: place.venue.location.lng,
-        id: place.venue.id
-      }))
-      
-      this.setState({places: places, showingPlaces: places})
-      this.createMarkers(this.state.map, places)
-    })
   }
 
   changeMenu = () => {
@@ -52,43 +26,51 @@ class App extends Component {
     infoWindow.addListener('closeclick', function () {
       infoWindow.setMarker = null;
     });
-    const url = new URL(`https://api.foursquare.com/v2/venues/${info.id}/photos`)
-    const parameters = {
-      client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
-      client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
-      v: "20181025"
-    }
-    url.search = new URLSearchParams({
-      client_id: parameters.client_id,
-      client_secret: parameters.client_secrect, v: "20181025"
-    })
+    // let url = new URL(`https://api.foursquare.com/v2/venues/${info.id}/photos`)
+    // const parameters = {
+    //   client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
+    //   client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
+    //   v: "20181025"
+    // }
+    // url.search = new URLSearchParams({
+    //   client_id: parameters.client_id,
+    //   client_secret: parameters.client_secrect, v: "20181025"
+    // })
     
-    fetch(url)
-    .then(res => res.json())
-    .then(res => {
-      let prefix = res.response.photos.items[0].prefix
-      let size = 'width100'
-      let suffix = res.response.photos.items[0].suffix
-      const url = new URL(`${prefix}${size}${suffix}`)
-      url.search = new URLSearchParams({
-        client_id: parameters.client_id,
-        client_secret: parameters.client_secrect, v: "20181025"
-      })
-      return url
-    })
-    .then(res => (
-      `<div>
-        <img src=${res}/>
+    // fetch(url)
+    // .then(res => res.json())
+    // .then(res => {
+    //   let prefix = res.response.photos.items[0].prefix
+    //   let size = 'width100'
+    //   let suffix = res.response.photos.items[0].suffix
+    //   url = new URL(`${prefix}${size}${suffix}`)
+    //   url.search = new URLSearchParams({
+    //     client_id: parameters.client_id,
+    //     client_secret: parameters.client_secrect, v: "20181025"
+    //   })
+    //   return url
+    // })
+    // .then(res => (
+    //   `<div>
+    //     <img src=${res}/>
+    //     <h3>${info.name}</h3>
+    //     <p>${info.address}</p>
+    //   </div>`
+    // ))
+    // .then(content => {
+    //   infoWindow.setContent(content)
+    //   this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
+    //   marker.setIcon(this.makeMarkerIcon('FFFFFF'))
+    //   infoWindow.open(map, marker)
+    // })
+    let content = `<div>
         <h3>${info.name}</h3>
-        <p>${info.address}</p>
+        <p>${info.address ? info.address : 'Não informado'}</p>
       </div>`
-    ))
-    .then(content => {
-      infoWindow.setContent(content)
-      this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
-      marker.setIcon(this.makeMarkerIcon('FFFFFF'))
-      infoWindow.open(map, marker)
-    })
+    infoWindow.setContent(content)
+    this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
+    marker.setIcon(this.makeMarkerIcon('FFFFFF'))
+    infoWindow.open(map, marker)
     
   }
 
@@ -163,22 +145,16 @@ class App extends Component {
           </ul>
         </aside>
         <div className={`wrapper ${this.state.menu ? "slide" : ""}`}>
-          <nav className="nav">
-            <div className="nav-burger" tabIndex="1" onClick={this.changeMenu} onKeyPress={this.changeMenu}>
-              <div className="bar"></div>
-              <div className="bar"></div>
-              <div className="bar"></div>
-            </div>
-            <h1>Recife Boa Viagem</h1>
-          </nav>
+          <NavBar changeMenu={this.changeMenu}/>
           <Map
             id="MapRecife"
             options={{
               center: { lat: -8.129725, lng: -34.902381 },
               zoom: 16
             }}
-            onMapLoad={map => {
-              this.createMarkers(map, this.state.showingPlaces)
+            onMapLoad={(map, places) => {
+              this.setState({ places: places, showingPlaces: places })
+              this.createMarkers(map, places)
             }}
           />
         </div>

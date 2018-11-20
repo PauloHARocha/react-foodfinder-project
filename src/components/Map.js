@@ -10,7 +10,32 @@ class Map extends Component {
         const map = new window.google.maps.Map(
             document.getElementById(this.props.id),
             this.props.options);
-        this.props.onMapLoad(map)
+            
+        const url = new URL("https://api.foursquare.com/v2/venues/explore")
+        const parameters = {
+            client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
+            client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
+            query: "food",
+            ll: "-8.129725,-34.902381"
+        }
+        url.search = new URLSearchParams({
+            client_id: parameters.client_id,
+            client_secret: parameters.client_secrect, v: "20181025", locale: 'br',
+            ll: parameters.ll, query: parameters.query
+        })
+
+        fetch(url)
+            .then(res => res.json())
+            .then(res => {
+                let places = res.response.groups[0].items.map(place => ({
+                    name: place.venue.name,
+                    address: place.venue.location.address,
+                    lat: place.venue.location.lat,
+                    lng: place.venue.location.lng,
+                    id: place.venue.id
+                }))
+                this.props.onMapLoad(map, places)
+            })
     }
 
     componentDidMount() {

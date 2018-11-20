@@ -32,6 +32,33 @@ class App extends Component {
         lng: -34.904528
       }
     ],
+    showingPlaces: [
+      {
+        name: 'Ramon Hostel Bar',
+        lat: -8.129405,
+        lng: -34.903342
+      },
+      {
+        name: 'Pracinha de Boa Viagem',
+        lat: -8.132092,
+        lng: -34.900324
+      },
+      {
+        name: 'Shopping Recife',
+        lat: -8.119113,
+        lng: -34.904934
+      },
+      {
+        name: 'Villa Gourmet',
+        lat: -8.126144,
+        lng: -34.903922
+      },
+      {
+        name: 'Mafuá do Januário',
+        lat: -8.133618,
+        lng: -34.904528
+      }
+    ],
     menu: false,
     infoWindow: null,
     map: null,
@@ -75,19 +102,57 @@ class App extends Component {
       new window.google.maps.Size(21, 34));
     return markerImage;
   }
-  
+  onChangeInput = (e) => {
+    let clearMarkers = this.state.markerList;
+    clearMarkers = clearMarkers.map(marker => {
+      marker.setMap(null);
+      return marker;
+    });
+
+    this.setState({ markers: clearMarkers });
+    let showingPlaces = this.state.places.filter(place => (
+      place.name.includes(e.target.value)
+    ))
+    console.log(showingPlaces)
+    
+    this.createMarkers(this.state.map, showingPlaces)
+  }
+
+  createMarkers(map, showingPlaces){
+    let marker, markerList = []
+    this.setState({ map: map, infoWindow: new window.google.maps.InfoWindow() })
+    const defaultIcon = this.makeMarkerIcon;
+    const highlightedIcon = this.makeMarkerIcon;
+    showingPlaces.map((place, id) => {
+      marker = new window.google.maps.Marker({
+        position: { lat: place.lat, lng: place.lng },
+        map: map,
+        title: place.name,
+        animation: window.google.maps.Animation.DROP,
+        icon: defaultIcon('0091ff')
+      })
+      markerList.push(marker)
+      marker.addListener('click', e => {
+        this.createInfoWindow(markerList[id], map)
+      })
+      marker.addListener('mouseover', function () {
+        this.setIcon(highlightedIcon('FFFF24'));
+      });
+      marker.addListener('mouseout', function () {
+        this.setIcon(defaultIcon('0091ff'));
+      });
+    })
+    this.setState({ markerList: markerList, showingPlaces: showingPlaces })
+  }
 
   render() {
-    const defaultIcon = this.makeMarkerIcon;
-
-
-    const highlightedIcon = this.makeMarkerIcon;
     return (
       <div>
         <aside className={`side-menu ${this.state.menu ? "visible" : ""}`}>
           <h2>Food Finder</h2>
+          <input type="text" onChange={this.onChangeInput}></input>
           <ul>
-            {this.state.places.map((place, id) => (
+            {this.state.showingPlaces.map((place, id) => (
               <li key={place.name} id={id} onClick={this.createInfoWindowFromList}>{place.name}</li>
             ))}
           </ul>
@@ -108,28 +173,7 @@ class App extends Component {
               zoom: 15
             }}
             onMapLoad={map => {
-              let marker, markerList = []
-              this.setState({ map: map, infoWindow: new window.google.maps.InfoWindow()})
-              this.state.places.map((place, id) => {
-                marker = new window.google.maps.Marker({
-                  position: { lat: place.lat, lng: place.lng },
-                  map: map,
-                  title: place.name,
-                  animation: window.google.maps.Animation.DROP,
-                  icon: defaultIcon('0091ff')
-                })
-                markerList.push(marker)
-                marker.addListener('click', e => {
-                  this.createInfoWindow(markerList[id], map)
-                })
-                marker.addListener('mouseover', function () {
-                  this.setIcon(highlightedIcon('FFFF24'));
-                });
-                marker.addListener('mouseout', function () {
-                  this.setIcon(defaultIcon('0091ff'));
-                });
-              })
-              this.setState({markerList: markerList})
+              this.createMarkers(map, this.state.showingPlaces)
             }}
           />
         </div>

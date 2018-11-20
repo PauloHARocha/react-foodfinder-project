@@ -27,52 +27,48 @@ class App extends Component {
     infoWindow.addListener('closeclick', function () {
       infoWindow.setMarker = null;
     });
-    // let url = new URL(`https://api.foursquare.com/v2/venues/${info.id}/photos`)
-    // const parameters = {
-    //   client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
-    //   client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
-    //   v: "20181025"
-    // }
-    // url.search = new URLSearchParams({
-    //   client_id: parameters.client_id,
-    //   client_secret: parameters.client_secrect, v: "20181025"
-    // })
+    let url = new URL(`https://api.foursquare.com/v2/venues/${info.id}/photos`)
+    const parameters = {
+      client_id: "XRSSA1AQTZ45PLHSXP3ZAWMKBKKX31S0YPBDWJYCIXXHSIJA",
+      client_secrect: "QBTVBE0BUBV4RD1LAHY0Q40I4ASPCOPBKQFC4MQKXWKVU4AK",
+      v: "20181025"
+    }
+    url.search = new URLSearchParams({
+      client_id: parameters.client_id,
+      client_secret: parameters.client_secrect, v: "20181025"
+    })
     
-    // fetch(url)
-    // .then(res => res.json())
-    // .then(res => {
-    //   let prefix = res.response.photos.items[0].prefix
-    //   let size = 'width100'
-    //   let suffix = res.response.photos.items[0].suffix
-    //   url = new URL(`${prefix}${size}${suffix}`)
-    //   url.search = new URLSearchParams({
-    //     client_id: parameters.client_id,
-    //     client_secret: parameters.client_secrect, v: "20181025"
-    //   })
-    //   return url
-    // })
-    // .then(res => (
-    //   `<div>
-    //     <img src=${res}/>
-    //     <h3>${info.name}</h3>
-    //     <p>${info.address}</p>
-    //   </div>`
-    // ))
-    // .then(content => {
-    //   infoWindow.setContent(content)
-    //   this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
-    //   marker.setIcon(this.makeMarkerIcon('FFFFFF'))
-    //   infoWindow.open(map, marker)
-    // })
-    let content = `<div>
+    fetch(url)
+    .then(res => res.json())
+    .then(res => {
+      if (res.ok){
+        let prefix = res.response.photos.items[0].prefix
+        let size = 'width100'
+        let suffix = res.response.photos.items[0].suffix
+        url = new URL(`${prefix}${size}${suffix}`)
+        url.search = new URLSearchParams({
+          client_id: parameters.client_id,
+          client_secret: parameters.client_secrect, v: "20181025"
+        })
+        return url
+      }
+      else {
+        return 'https://via.placeholder.com/108x120.png?text=No+Image' //quota_exceeded
+      }
+    })
+    .then(res => (
+      `<div>
+        <img src=${res}/>
         <h3>${info.name}</h3>
-        <p>${info.address ? info.address : 'Não informado'}</p>
+        <p>${info.address}</p>
       </div>`
-    infoWindow.setContent(content)
-    this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
-    marker.setIcon(this.makeMarkerIcon('FFFFFF'))
-    infoWindow.open(map, marker)
-    
+    ))
+    .then(content => {
+      infoWindow.setContent(content)
+      this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
+      marker.setIcon(this.makeMarkerIcon('FFFFFF'))
+      infoWindow.open(map, marker)
+    })  
   }
 
   createInfoWindowFromList = (e) => {

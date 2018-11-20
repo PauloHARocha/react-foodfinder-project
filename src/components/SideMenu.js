@@ -5,13 +5,18 @@ class SideMenu extends Component {
         const { menu, onChangeInput, createInfoWindowFromList, showingPlaces} = this.props
         return (
             <aside className={`side-menu ${menu ? "visible" : ""}`}>
-                <h2>Food Finder</h2>
-                <input type="text" onChange={onChangeInput}></input>
+                <h2 className="menu-title">Food Finder</h2>
+                <input className="food-finder"
+                placeholder="Search for food here"
+                type="text" onChange={onChangeInput} tabIndex="2"></input>
                 <ul className="food-list">
                     {showingPlaces.map((place, id) => (
-                        <li className="food-item"
-                            key={place.name} i
-                            d={id} 
+                        <li 
+                            tabIndex="3"                                                                            
+                            className=  "food-item"
+                            key={place.name} 
+                            id={id}
+                            onKeyPress={createInfoWindowFromList} 
                             onClick={createInfoWindowFromList}>{place.name}</li>
                     ))}
                 </ul>

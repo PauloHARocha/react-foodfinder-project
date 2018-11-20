@@ -28,13 +28,19 @@ class App extends Component {
         lat: -8.133618,
         lng: -34.904528
       }
-
-    ]
+    ],
+    menu: false
   }
+
+  changeMenu = () => {
+    let menu = !this.state.menu
+    this.setState({ menu: menu })
+  }
+
   render() {
     return (
       <div>
-        <aside className="side-menu">
+        <aside className={`side-menu ${this.state.menu ? "visible" : ""}`}>
           <h2>Food Finder</h2>
           <ul>
             {this.state.places.map(place => (
@@ -42,7 +48,16 @@ class App extends Component {
             ))}
           </ul>
         </aside>
-        
+        <div className={`wrapper ${this.state.menu ? "slide" : ""}`}>
+          <nav className="nav">
+            <div className="nav-burger" tabIndex="1" onClick={this.changeMenu} onKeyPress={this.changeMenu}>
+              <div className="bar"></div>
+              <div className="bar"></div>
+              <div className="bar"></div>
+            </div>
+            <h1>Recife Boa Viagem</h1>
+          </nav>
+        </div>
       </div>
     );
   }

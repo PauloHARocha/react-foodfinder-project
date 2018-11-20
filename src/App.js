@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Map from './Map'
 
 class App extends Component {
   state = {
@@ -57,6 +58,20 @@ class App extends Component {
             </div>
             <h1>Recife Boa Viagem</h1>
           </nav>
+          <Map
+            id="myMap"
+            options={{
+              center: { lat: 41.0082, lng: 28.9784 },
+              zoom: 8
+            }}
+            onMapLoad={map => {
+              let marker = new window.google.maps.Marker({
+                position: { lat: 41.0082, lng: 28.9784 },
+                map: map,
+                title: 'Hello Istanbul!'
+              });
+            }}
+          />
         </div>
       </div>
     );

@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .side-menu {
@@ -70,4 +71,9 @@ h1 {
     height: .3rem;
     background-color: #fff;
     border-radius: .5rem;
+}
+
+.map{
+  width: 100% !important;
+  height: calc(100% - 63px) !important;
 }

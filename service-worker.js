@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/react-foodfinder-project/precache-manifest.472082bcc80ce13ccbdfcbb241524f53.js"
+  "/react-foodfinder-project/precache-manifest.62824c6b65724b26277a59da7ab2581d.js"
 );
 
 workbox.clientsClaim();

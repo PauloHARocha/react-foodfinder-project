@@ -68,6 +68,10 @@ class App extends Component {
       this.state.markerList.map(marker => (marker.setIcon(this.makeMarkerIcon('FFFF24'))))
       marker.setIcon(this.makeMarkerIcon('FFFFFF'))
       infoWindow.open(map, marker)
+    })
+    .catch(error => {
+      console.log(error)
+      alert(`Something wrong happened, check your internet conection and refresh the page`)
     })  
   }
 
@@ -106,7 +110,7 @@ class App extends Component {
     this.setState({ map: map, infoWindow: new window.google.maps.InfoWindow() })
     const defaultIcon = this.makeMarkerIcon;
     const highlightedIcon = this.makeMarkerIcon;
-    showingPlaces.map((place, id) => {
+    showingPlaces.forEach((place, id) => {
       marker = new window.google.maps.Marker({
         position: { lat: place.lat, lng: place.lng },
         map: map,

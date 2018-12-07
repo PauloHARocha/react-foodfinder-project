@@ -9,17 +9,20 @@ class SideMenu extends Component {
                 <input className="food-finder"
                 placeholder="Search for food here"
                 type="text" onChange={onChangeInput} tabIndex="2"></input>
+                
                 <ul className="food-list">
                     {showingPlaces.map((place, id) => (
-                        <li 
-                            tabIndex="3"                                                                            
-                            className=  "food-item"
-                            key={place.name} 
+                        <li
+                            tabIndex="3"
+                            className="food-item"
+                            key={place.id}
                             id={id}
-                            onKeyPress={createInfoWindowFromList} 
+                            onKeyPress={createInfoWindowFromList}
                             onClick={createInfoWindowFromList}>{place.name}</li>
                     ))}
                 </ul>
+                
+                
             </aside>
         )
     }

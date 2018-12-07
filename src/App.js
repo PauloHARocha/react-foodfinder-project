@@ -96,9 +96,8 @@ class App extends Component {
 
     this.setState({ markers: clearMarkers });
     let showingPlaces = this.state.places.filter(place => (
-      place.name.includes(e.target.value)
+      place.name.match(e.target.value)
     ))
-    
     this.createMarkers(this.state.map, showingPlaces)
   }
 

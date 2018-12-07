@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 class Map extends Component {
+    
     constructor(props) {
         super(props);
         this.onScriptLoad = this.onScriptLoad.bind(this)
@@ -40,24 +41,40 @@ class Map extends Component {
 
     componentDidMount() {
         if (!window.google) {
-            let s = document.createElement('script');
-            s.type = 'text/javascript';
-            s.src = `https://maps.google.com/maps/api/js?key=AIzaSyDqnxrPFH-QNRfwryEntbFmlqAUL3-1dEE`;
-            let x = document.getElementsByTagName('script')[0];
-            x.parentNode.insertBefore(s, x);
+            let s = document.createElement('script')
+            s.type = 'text/javascript'
+            s.async = true
+            s.defer = true
+            s.src = `https://maps.google.com/maps/api/js?key=AIzaSyDqnxrPFH-QNRfwryEntbFmlqAUL3-1dEE`
+            let x = document.getElementsByTagName('script')[0]
+            x.parentNode.insertBefore(s, x)
             // Below is important. 
             //We cannot access google.maps until it's finished loading
             s.addEventListener('load', e => {
                 this.onScriptLoad()
             })
+            window.gm_authFailure = () => {
+                this.onError()
+            };
+            s.onerror = () => {
+                this.onError()
+            };
         } else {
             this.onScriptLoad()
         }
     }
 
+    onError = () => {
+        alert(`Something wrong happened, check your internet conection and refresh the page`)
+    }
+
     render() {
         return (
-            <div className="map" id={this.props.id} />
+            <div 
+                className="map" 
+                aria-label="map"
+                role="application"
+                id={this.props.id} />
         );
     }
 }

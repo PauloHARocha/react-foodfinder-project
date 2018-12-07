@@ -61,6 +61,7 @@ class App extends Component {
         <img src=${res}/>
         <h3>${info.name}</h3>
         <p>${info.address}</p>
+        <p>Foursquare<p>
       </div>`
     ))
     .then(content => {

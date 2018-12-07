@@ -10,6 +10,7 @@ Search for places to eat at this beautiful city.
 
 * React
 * Google Maps API
+* Fousquare API
 
 ## How to test it locally
 

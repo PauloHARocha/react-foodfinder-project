@@ -70,10 +70,9 @@ class App extends Component {
       marker.setIcon(this.makeMarkerIcon('FFFFFF'))
       infoWindow.open(map, marker)
     })
-    .catch(error => {
-      console.log(error)
+    .catch(() =>(
       alert(`Something wrong happened, check your internet conection and refresh the page`)
-    })  
+    ))
   }
 
   createInfoWindowFromList = (e) => {

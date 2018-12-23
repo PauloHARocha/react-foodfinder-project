@@ -37,6 +37,9 @@ class Map extends Component {
                 }))
                 this.props.onMapLoad(map, places)
             })
+            .catch(() => (
+                alert(`Something wrong happened, check your internet conection and refresh the page`)
+            ))
     }
 
     componentDidMount() {

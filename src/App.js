@@ -15,7 +15,7 @@ class App extends Component {
 
   changeMenu = () => {
     let menu = !this.state.menu
-    this.setState({ menu: menu })
+    this.setState({ menu })
   }
 
   createInfoWindow(marker, info, map) {
@@ -76,8 +76,8 @@ class App extends Component {
   }
 
   createInfoWindowFromList = (e) => {
-    let marker = this.state.markerList[e.target.id]
-    let info = this.state.showingPlaces[e.target.id]
+    const marker = this.state.markerList[e.target.id]
+    const info = this.state.showingPlaces[e.target.id]
     this.createInfoWindow(marker, info, this.state.map)
   }
 
@@ -99,9 +99,12 @@ class App extends Component {
     });
 
     this.setState({ markers: clearMarkers });
-    let showingPlaces = this.state.places.filter(place => (
-      place.name.match(e.target.value)
-    ))
+    let aux_place;
+    let showingPlaces = this.state.places.filter(place => {
+      aux_place = place.name.toUpperCase()
+      if(aux_place.match(e.target.value.toUpperCase()))
+        return place
+    }) 
     this.createMarkers(this.state.map, showingPlaces)
   }
 

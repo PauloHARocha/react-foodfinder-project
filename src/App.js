@@ -99,12 +99,10 @@ class App extends Component {
     });
 
     this.setState({ markers: clearMarkers });
-    let aux_place;
-    let showingPlaces = this.state.places.filter(place => {
-      aux_place = place.name.toUpperCase()
-      if(aux_place.match(e.target.value.toUpperCase()))
-        return place
-    }) 
+  
+    let showingPlaces = this.state.places.filter(place => (
+      place.name.toUpperCase().match(e.target.value.toUpperCase())
+    )) 
     this.createMarkers(this.state.map, showingPlaces)
   }
 

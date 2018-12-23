@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/react-foodfinder-project/static/js/runtime~main.294896f7.js"
   },
   {
-    "revision": "43ab2c229d8c8047988f",
-    "url": "/react-foodfinder-project/static/js/main.43ab2c22.chunk.js"
+    "revision": "a048f9fb84d3d5f09f93",
+    "url": "/react-foodfinder-project/static/js/main.a048f9fb.chunk.js"
   },
   {
     "revision": "6ea4476df7c52da542d9",
     "url": "/react-foodfinder-project/static/js/1.6ea4476d.chunk.js"
   },
   {
-    "revision": "43ab2c229d8c8047988f",
+    "revision": "a048f9fb84d3d5f09f93",
     "url": "/react-foodfinder-project/static/css/main.9ba89b2f.chunk.css"
   },
   {
-    "revision": "b8aa5534054f16a971c5f2a6d251043a",
+    "revision": "dfd6ba7c2c4bd58e0d796b2946bdc8d8",
     "url": "/react-foodfinder-project/index.html"
   }
 ];
